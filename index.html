@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мій Shop</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        body { font-family: sans-serif; background-color: var(--tg-theme-bg-color, #fff); color: var(--tg-theme-text-color, #000); padding: 20px; }
+        .item { border: 1px solid #ccc; border-radius: 10px; padding: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+        .btn { padding: 10px 20px; background-color: var(--tg-theme-button-color, #3390ec); color: var(--tg-theme-button-text-color, #fff); border: none; border-radius: 5px; cursor: pointer; }
+        h1 { text-align: center; }
+    </style>
+</head>
+<body>
+    <h1>Каталог Товарів</h1>
+    <div id="list"></div>
+
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand(); 
+
+        const products = [
+            {id: 1, name: "Супер Кросівки", price: 2500},
+            {id: 2, name: "Худі Oversize", price: 1200},
+            {id: 3, name: "Кепка", price: 500}
+        ];
+
+        const cart = {};
+
+
+        const listDiv = document.getElementById('list');
+        products.forEach(item => {
+            const div = document.createElement('div');
+            div.className = 'item';
+            div.innerHTML = `
+                <div>
+                    <b>${item.name}</b><br>
+                    ${item.price} грн
+                </div>
+                <button class="btn" onclick="addToCart(${item.id})">Додати</button>
+            `;
+            listDiv.appendChild(div);
+        });
+
+
+        function addToCart(id) {
+            if (!cart[id]) cart[id] = 0;
+            cart[id]++;
+            updateMainButton();
+        }
+
+        function updateMainButton() {
+            let totalItems = Object.values(cart).reduce((a, b) => a + b, 0);
+            if (totalItems > 0) {
+                tg.MainButton.setText(`Замовити (${totalItems} шт)`);
+                tg.MainButton.show();
+            } else {
+                tg.MainButton.hide();
+            }
+        }
+
+
+        Telegram.WebApp.onEvent("mainButtonClicked", function(){
+            const data = JSON.stringify(cart);
+            tg.sendData(data);
+        });
+    </script>
+</body>
+</html>
