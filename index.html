@@ -2,228 +2,69 @@
 <html lang="uk">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TechStore</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Мій Shop</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
     <style>
-        :root {
-            --bg-color: var(--tg-theme-bg-color, #fff);
-            --text-color: var(--tg-theme-text-color, #000);
-            --hint-color: var(--tg-theme-hint-color, #999);
-            --btn-color: var(--tg-theme-button-color, #3390ec);
-            --btn-text: var(--tg-theme-button-text-color, #fff);
-            --secondary-bg: var(--tg-theme-secondary-bg-color, #f0f0f0);
-        }
-
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif; 
-            background-color: var(--bg-color); 
-            color: var(--text-color); 
-            margin: 0; 
-            padding: 0; 
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        .tabs {
-            display: flex;
-            overflow-x: auto;
-            padding: 15px;
-            gap: 10px;
-            background: var(--bg-color);
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            border-bottom: 1px solid var(--secondary-bg);
-        }
-        .tab {
-            padding: 8px 16px;
-            border-radius: 20px;
-            background: var(--secondary-bg);
-            color: var(--text-color);
-            font-size: 14px;
-            font-weight: 500;
-            white-space: nowrap;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-        .tab.active {
-            background: var(--btn-color);
-            color: var(--btn-text);
-        }
-
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr); 
-            gap: 12px;
-            padding: 15px;
-        }
-
-        .card {
-            background: var(--bg-color);
-            border: 1px solid var(--secondary-bg);
-            border-radius: 12px;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            transition: transform 0.1s;
-        }
-        .card:active { transform: scale(0.98); }
-
-        .card-img {
-            width: 100%;
-            height: 120px;
-            object-fit: cover;
-            background: #eee;
-        }
-        
-        .card-body { padding: 10px; display: flex; flex-direction: column; flex-grow: 1; }
-        .card-title { font-size: 14px; font-weight: 600; margin-bottom: 5px; }
-        .card-price { font-size: 15px; color: var(--btn-color); font-weight: 700; margin-top: auto; }
-
-        .counter {
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            background: var(--btn-color);
-            color: var(--btn-text);
-            border-radius: 8px;
-            padding: 4px 8px;
-            font-size: 12px;
-            font-weight: bold;
-            display: none; 
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-        }
-
-        .add-btn {
-            width: 100%;
-            padding: 10px;
-            margin-top: 10px;
-            border: none;
-            border-radius: 8px;
-            background: var(--secondary-bg);
-            color: var(--text-color);
-            font-weight: 600;
-            cursor: pointer;
-        }
-        .add-btn.added {
-            background: var(--btn-color);
-            color: var(--btn-text);
-        }
+        body { font-family: sans-serif; background-color: var(--tg-theme-bg-color, #fff); color: var(--tg-theme-text-color, #000); padding: 20px; }
+        .item { border: 1px solid #ccc; border-radius: 10px; padding: 15px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+        .btn { padding: 10px 20px; background-color: var(--tg-theme-button-color, #3390ec); color: var(--tg-theme-button-text-color, #fff); border: none; border-radius: 5px; cursor: pointer; }
+        h1 { text-align: center; }
     </style>
 </head>
 <body>
-
-    <div class="tabs" id="tabs">
-        <div class="tab active" onclick="filter('all', this)">Всі</div>
-        <div class="tab" onclick="filter('electronics', this)">Електроніка</div>
-        <div class="tab" onclick="filter('clothing', this)">Одяг</div>
-        <div class="tab" onclick="filter('food', this)">Їжа</div>
-    </div>
-
-    <div class="grid" id="list"></div>
+    <h1>Каталог Товарів</h1>
+    <div id="list"></div>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand(); 
 
         const products = [
-            {id: 1, type: 'electronics', name: "iPhone 15 Pro", price: 42000, img: "https://placehold.co/300x200/black/white?text=iPhone"},
-            {id: 2, type: 'electronics', name: "MacBook Air", price: 54000, img: "https://placehold.co/300x200/gray/white?text=MacBook"},
-            {id: 3, type: 'clothing', name: "Худі Oversize", price: 1200, img: "https://placehold.co/300x200/orange/white?text=Hoodie"},
-            {id: 4, type: 'clothing', name: "Кепка NY", price: 600, img: "https://placehold.co/300x200/blue/white?text=Cap"},
-            {id: 5, type: 'food', name: "Піца Pepperoni", price: 350, img: "https://placehold.co/300x200/red/white?text=Pizza"},
-            {id: 6, type: 'electronics', name: "AirPods Pro", price: 9000, img: "https://placehold.co/300x200/white/black?text=AirPods"},
+            {id: 1, name: "Супер Кросівки", price: 2500},
+            {id: 2, name: "Худі Oversize", price: 1200},
+            {id: 3, name: "Кепка", price: 500}
         ];
 
-        let cart = {};
+        const cart = {};
 
-        function render(filterType = 'all') {
-            const list = document.getElementById('list');
-            list.innerHTML = "";
 
-            products.forEach(item => {
-                if (filterType !== 'all' && item.type !== filterType) return;
+        const listDiv = document.getElementById('list');
+        products.forEach(item => {
+            const div = document.createElement('div');
+            div.className = 'item';
+            div.innerHTML = `
+                <div>
+                    <b>${item.name}</b><br>
+                    ${item.price} грн
+                </div>
+                <button class="btn" onclick="addToCart(${item.id})">Додати</button>
+            `;
+            listDiv.appendChild(div);
+        });
 
-                const div = document.createElement('div');
-                div.className = 'card';
-                div.onclick = () => toggleItem(item.id, div);
-                
-                const count = cart[item.id] || 0;
-                const counterStyle = count > 0 ? "display: block" : "";
-                const btnClass = count > 0 ? "add-btn added" : "add-btn";
-                const btnText = count > 0 ? "Прибрати" : "Додати";
 
-                div.innerHTML = `
-                    <div class="counter" id="cnt-${item.id}" style="${counterStyle}">${count} шт</div>
-                    <img src="${item.img}" class="card-img" alt="${item.name}">
-                    <div class="card-body">
-                        <div class="card-title">${item.name}</div>
-                        <div class="card-price">${item.price} ₴</div>
-                        <button class="add-btn" id="btn-${item.id}">${btnText}</button>
-                    </div>
-                `;
-                list.appendChild(div);
-            });
-        }
-
-        function toggleItem(id, cardElement) {
-            tg.HapticFeedback.impactOccurred('medium');
-
+        function addToCart(id) {
             if (!cart[id]) cart[id] = 0;
-
-            
-            if (cart[id] > 0) {
-                cart[id] = 0; 
-                document.getElementById(`cnt-${id}`).style.display = 'none';
-                document.getElementById(`btn-${id}`).innerText = "Додати";
-                document.getElementById(`btn-${id}`).classList.remove("added");
-            } else {
-                cart[id] = 1; 
-                document.getElementById(`cnt-${id}`).style.display = 'block';
-                document.getElementById(`btn-${id}`).innerText = "Прибрати";
-                document.getElementById(`btn-${id}`).classList.add("added");
-            }
-
+            cart[id]++;
             updateMainButton();
         }
 
-        function filter(type, tabElement) {
-            tg.HapticFeedback.selectionChanged();
-
-        
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            tabElement.classList.add('active');
-            
-            render(type);
-        }
-
         function updateMainButton() {
-            let totalSum = 0;
-            let totalItems = 0;
-
-            for (const [id, count] of Object.entries(cart)) {
-                if (count > 0) {
-                    const product = products.find(p => p.id == id);
-                    totalSum += product.price * count;
-                    totalItems += count;
-                }
-            }
-
+            let totalItems = Object.values(cart).reduce((a, b) => a + b, 0);
             if (totalItems > 0) {
-                tg.MainButton.setText(`Оформити: ${totalSum} ₴`);
+                tg.MainButton.setText(`Замовити (${totalItems} шт)`);
                 tg.MainButton.show();
             } else {
                 tg.MainButton.hide();
             }
         }
 
-        Telegram.WebApp.onEvent("mainButtonClicked", function(){
-            tg.sendData(JSON.stringify(cart));
-        });
 
-        render();
+        Telegram.WebApp.onEvent("mainButtonClicked", function(){
+            const data = JSON.stringify(cart);
+            tg.sendData(data);
+        });
     </script>
 </body>
 </html>
